@@ -11,7 +11,7 @@
     "first_name": "John",
     "last_name": "Doe",
     "email": "john.doe@example.com",
-    "iban": "NL54INGB1587926199",     // This will count as the document ID
+    "iban": "NL54INGB1587926199",     
     "age": 30
 }
 ````
@@ -21,7 +21,11 @@
     "state": "added document"
 }
 ````
-**Note:** You won't have to pass 'time' as that will automatically be added
+**Note:**
+- You won't have to pass 'time' as that will automatically be added
+- The passed 'iban' will be used as the document_id 
+
+
 
 
 **Action:** Fetch all data \
