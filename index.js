@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser')
 const setup = require('./setupDB');
 const query = require('./queryDB');
 
@@ -7,6 +8,17 @@ setup.initFirestore();
 
 // Create Express app
 const api = express();
+
+// parse application/json
+api.use(bodyParser.json())
+
+// Create a Timestamp
+function getTimestamp() {
+    const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+    const d = new Date();
+    const Timestamp = d.getDate() + '-' + months[d.getMonth()] + '-' + d.getFullYear() + ' - ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+    return Timestamp.toString();
+}
 
 // Set Routes
 api.get('/api/data', async (req, res) => {
@@ -34,33 +46,25 @@ api.get('/api/data/:id/:field/:operator?', async (req, res) => {
     }
 });
 
-api.get('/insert', async (req, res) => {
+api.post('/api/insert', async (req, res) => {
     try {
-        // Get a reference to the Firestore database
-        const db = admin.firestore();
+        const body = req.body;
+        const date = getTimestamp();
 
-        // Create a new document with a generated ID
-        const newDocRef = db.collection('data').doc();
+        const insert = {
+            first_name: body.first_name,
+            last_name: body.last_name,
+            email: body.email,
+            iban: body.iban,
+            age: body.age,
+            time: date
+        }
 
-        // Set the data for the new document
-        const data = {
-            first_name: 'John',
-            last_name: 'Doe',
-            email: 'john.doe@example.com',
-            age: 30,
-            time: Date.now()
-        };
-
-        newDocRef.set(data)
-            .then(() => {
-                res.json({status: 'Document successfully written'});
-            })
-            .catch((error) => {
-                res.json({status: 'Error writing document: ', error});
-            });
+        const data = await query.insertData('data', body.iban, insert);
+        res.json(data)
     } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'Failed to get data'});
+        res.status(500).json({error: 'Failed to insert data'});
     }
 });
 
