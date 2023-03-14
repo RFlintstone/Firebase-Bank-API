@@ -16,6 +16,6 @@ RUN npm install --omit=dev
 # Add our source to the container
 COPY . .
 
-# Start service
+# Start service on exposed port
 EXPOSE 8080
 CMD [ "npm", "run", "production" ]
